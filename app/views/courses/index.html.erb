@@ -1,0 +1,6 @@
+<%= page_header "Courses", "Your academic course workspace." %>
+<div class="grid grid-3">
+  <% @courses.each do |course| %>
+    <article class="card"><div class="split"><span class="badge"><%= course.code %></span><span class="muted"><%= course.credits %> credits</span></div><h2><%= link_to course.name, course %></h2><p class="muted"><%= course.department.name %> · Semester <%= course.semester %></p><p><%= course.faculty_profile&.user&.full_name || "Faculty to be assigned" %></p></article>
+  <% end %>
+</div>

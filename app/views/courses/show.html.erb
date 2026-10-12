@@ -1,0 +1,5 @@
+<%= page_header @course.name, "#{@course.code} · #{@course.credits} credits · Semester #{@course.semester}" do %><%= link_to "Back", courses_path, class: "button ghost" %><% end %>
+<div class="grid grid-2">
+  <section class="card"><div class="section-title"><h2>Assignments</h2></div><ul class="list"><% @course.assignments.order(:due_at).each do |assignment| %><li><%= link_to assignment.title, assignment %><br><small class="muted">Due <%= assignment.due_at.strftime("%d %b %Y") %></small></li><% end %></ul></section>
+  <section class="card"><div class="section-title"><h2>Class sessions</h2></div><ul class="list"><% @course.class_sessions.order(session_date: :desc).limit(10).each do |session| %><li class="split"><%= link_to session.session_date.strftime("%d %b %Y"), session %><%= status_badge session.status %></li><% end %></ul></section>
+</div>

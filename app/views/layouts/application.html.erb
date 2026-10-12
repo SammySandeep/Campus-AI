@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Campus AI Command Center" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="<%= signed_in? ? 'app-body' : 'guest-body' %>">
+    <% if signed_in? %>
+      <aside class="sidebar">
+        <%= link_to dashboard_path, class: "brand" do %>
+          <span class="brand-mark">CA</span><span>Campus AI<small>Command Center</small></span>
+        <% end %>
+        <nav>
+          <%= nav_link "Dashboard", dashboard_path, "⌂" %>
+          <%= nav_link "Courses", courses_path, "▤" %>
+          <%= nav_link "Attendance", class_sessions_path, "✓" %>
+          <%= nav_link "Assignments", assignments_path, "✎" %>
+          <%= nav_link "Projects", projects_path, "◇" %>
+          <%= nav_link "Events", events_path, "◉" %>
+          <%= nav_link "Placements", placement_drives_path, "↗" %>
+          <%= nav_link "Helpdesk", complaints_path, "?" %>
+          <%= nav_link "Documents", documents_path, "▱" %>
+          <%= nav_link "Notifications", notifications_path, "●", badge: current_user.notifications.unread.count %>
+          <%= nav_link "Campus AI", assistant_path, "✦" %>
+          <%= nav_link "Profile", profile_path, "○" %>
+          <% if current_user.admin? %>
+            <div class="nav-label">Administration</div>
+            <%= nav_link "Admin overview", admin_root_path, "▦" %>
+            <%= nav_link "User management", admin_users_path, "♙" %>
+            <%= nav_link "Departments", admin_departments_path, "▥" %>
+          <% end %>
+        </nav>
+        <%= link_to profile_path, class: "sidebar-user" do %>
+          <span class="avatar"><%= current_user.first_name.first %><%= current_user.last_name.first %></span>
+          <span><strong><%= current_user.full_name %></strong><small><%= current_user.role.humanize %></small></span>
+        <% end %>
+      </aside>
+      <div class="app-shell">
+        <header class="topbar">
+          <%= form_with url: search_path, method: :get, class: "global-search" do |form| %>
+            <%= form.search_field :q, value: params[:q], placeholder: "Search campus…", aria: { label: "Search campus" } %>
+          <% end %>
+          <div class="top-actions">
+            <%= link_to notifications_path, class: "icon-link" do %>🔔<span><%= current_user.notifications.unread.count %></span><% end %>
+            <%= button_to "Sign out", logout_path, method: :delete, class: "button ghost small" %>
+          </div>
+        </header>
+        <main class="main-content">
+          <% flash.each do |type, message| %><div class="flash <%= type %>"><%= message %></div><% end %>
+          <%= yield %>
+        </main>
+      </div>
+    <% else %>
+      <% flash.each do |type, message| %><div class="flash guest-flash <%= type %>"><%= message %></div><% end %>
+      <%= yield %>
+    <% end %>
+  </body>
+</html>

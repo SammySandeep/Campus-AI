@@ -1,0 +1,26 @@
+<%= page_header "Good #{Time.current.hour < 12 ? 'morning' : 'day'}, #{current_user.first_name}", "Here is what is happening across your campus today." do %>
+  <%= link_to "Ask Campus AI", assistant_path, class: "button" %>
+<% end %>
+
+<div class="grid stat-grid">
+  <% @stats.each do |label, value| %><div class="card stat"><span class="label"><%= label %></span><strong class="value"><%= value %></strong></div><% end %>
+</div>
+
+<div class="grid grid-2">
+  <section class="card">
+    <div class="section-title"><h2>Today's classes</h2><%= link_to "View attendance", class_sessions_path %></div>
+    <% if @today_sessions.any? %><ul class="list"><% @today_sessions.each do |session| %><li class="split"><span><strong><%= session.course.code %></strong><br><small class="muted"><%= session.course.name %> · <%= session.room %></small></span><%= status_badge session.status %></li><% end %></ul><% else %><div class="empty">No classes scheduled today.</div><% end %>
+  </section>
+  <section class="card">
+    <div class="section-title"><h2>Upcoming deadlines</h2><%= link_to "All assignments", assignments_path %></div>
+    <% if @upcoming_assignments.any? %><ul class="list"><% @upcoming_assignments.each do |assignment| %><li><strong><%= link_to assignment.title, assignment %></strong><br><small class="muted"><%= assignment.course.code %> · Due <%= assignment.due_at.strftime("%d %b, %I:%M %p") %></small></li><% end %></ul><% else %><div class="empty">No upcoming assignment deadlines.</div><% end %>
+  </section>
+  <section class="card">
+    <div class="section-title"><h2>Upcoming events</h2><%= link_to "Explore events", events_path %></div>
+    <% if @upcoming_events.any? %><ul class="list"><% @upcoming_events.each do |event| %><li class="split"><span><strong><%= link_to event.title, event %></strong><br><small class="muted"><%= event.starts_at.strftime("%d %b, %I:%M %p") %> · <%= event.location %></small></span><span class="badge"><%= event.available_seats %> seats</span></li><% end %></ul><% else %><div class="empty">No upcoming events.</div><% end %>
+  </section>
+  <section class="card">
+    <div class="section-title"><h2>Campus activity</h2></div>
+    <% if @activities.any? %><ul class="list"><% @activities.each do |activity| %><li><strong><%= activity.description %></strong><br><small class="muted"><%= time_ago_in_words(activity.created_at) %> ago</small></li><% end %></ul><% else %><div class="empty">Activity will appear here.</div><% end %>
+  </section>
+</div>

@@ -1,0 +1,62 @@
+<% content_for :title, "Campus AI Assistant" %>
+<div class="chat-page">
+  <header class="chat-header">
+    <div>
+      <div class="chat-title"><span class="ai-orb">✦</span><h1>Campus AI</h1><span class="ai-status">Demo provider</span></div>
+      <p>Private answers grounded in the campus data available to your role.</p>
+    </div>
+    <% if @history.any? %><%= button_to "Clear chat", assistant_path, method: :delete, class: "button ghost small" %><% end %>
+  </header>
+
+  <div class="chat-scroll">
+    <% if @history.empty? %>
+      <section class="chat-welcome">
+        <span class="welcome-orb">✦</span>
+        <h2>How can I help, <%= current_user.first_name %>?</h2>
+        <p>Ask about your campus day, academic work, opportunities, or anything that needs your attention.</p>
+      </section>
+
+      <section class="prompt-section">
+        <div class="prompt-heading"><span>Suggested questions for <%= current_user.role.humanize.downcase %></span><small><%= @suggestions.size %> things you can ask</small></div>
+        <div class="prompt-grid">
+          <% @suggestions.each_with_index do |suggestion, index| %>
+            <%= button_to assistant_path, params: { question: suggestion }, method: :post, class: "prompt-chip" do %>
+              <span class="prompt-icon"><%= %w[⌁ ✓ ↗ ◇ ? ● ▦ ✦][index % 8] %></span>
+              <span><%= suggestion %></span>
+              <b>↗</b>
+            <% end %>
+          <% end %>
+        </div>
+      </section>
+    <% else %>
+      <section class="conversation" aria-live="polite">
+        <% @history.each_with_index do |message, index| %>
+          <article class="message <%= message[:role] %>" id="<%= "latest" if index == @history.length - 1 %>">
+            <div class="message-avatar"><%= message[:role] == "assistant" ? "✦" : current_user.first_name.first %></div>
+            <div class="message-content">
+              <strong><%= message[:role] == "assistant" ? "Campus AI" : "You" %></strong>
+              <div><%= simple_format(message[:content]) %></div>
+            </div>
+          </article>
+        <% end %>
+      </section>
+
+      <details class="more-prompts">
+        <summary>Explore more questions</summary>
+        <div class="prompt-grid compact">
+          <% @suggestions.each do |suggestion| %>
+            <%= button_to suggestion, assistant_path, params: { question: suggestion }, method: :post, class: "prompt-chip" %>
+          <% end %>
+        </div>
+      </details>
+    <% end %>
+  </div>
+
+  <div class="composer-wrap">
+    <%= form_with url: assistant_path, class: "chat-composer" do |form| %>
+      <%= form.text_area :question, placeholder: "Message Campus AI…", required: true, rows: 1, maxlength: 240, aria: { label: "Message Campus AI" } %>
+      <%= form.button "↑", class: "send-button", aria: { label: "Send question" } %>
+    <% end %>
+    <p>Campus AI can make mistakes. Verify important academic and administrative information.</p>
+  </div>
+</div>

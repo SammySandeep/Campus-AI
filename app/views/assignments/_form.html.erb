@@ -1,0 +1,10 @@
+<%= form_with model: assignment do |form| %>
+  <%= render "shared/errors", object: assignment %>
+  <% courses = current_user.faculty? ? current_user.faculty_profile.courses : Course.all %>
+  <div class="field"><%= form.label :course_id, "Course" %><%= form.collection_select :course_id, courses, :id, ->(course) { "#{course.code} — #{course.name}" }, prompt: "Select course" %></div>
+  <div class="field"><%= form.label :title %><%= form.text_field :title, required: true %></div>
+  <div class="field"><%= form.label :description %><%= form.text_area :description %></div>
+  <div class="grid grid-2"><div class="field"><%= form.label :due_at %><%= form.datetime_local_field :due_at, required: true %></div><div class="field"><%= form.label :maximum_marks %><%= form.number_field :maximum_marks, min: 1 %></div></div>
+  <div class="field checkbox"><%= form.label :published do %><%= form.check_box :published %> Publish to students<% end %></div>
+  <%= form.submit class: "button" %>
+<% end %>

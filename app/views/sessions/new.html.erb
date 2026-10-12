@@ -1,0 +1,18 @@
+<% content_for :title, "Sign in · Campus AI" %>
+<div class="login-shell">
+  <section class="login-hero">
+    <span class="brand-mark">CA</span>
+    <h1>One campus.<br>One command center.</h1>
+    <p>Academics, attendance, opportunities, student services, and campus intelligence in one secure Rails application.</p>
+  </section>
+  <section class="login-panel">
+    <h2>Welcome back</h2>
+    <p class="muted">Sign in with a seeded demo account.</p>
+    <%= form_with url: session_path do |form| %>
+      <div class="field"><%= form.label :email %><%= form.email_field :email, value: "student@example.com", autofocus: true, required: true %></div>
+      <div class="field"><%= form.label :password %><%= form.password_field :password, value: "password123", required: true %></div>
+      <%= form.submit "Sign in", class: "button", style: "width:100%" %>
+    <% end %>
+    <div class="demo-logins"><strong>Demo password: password123</strong><br>student@example.com<br>faculty@example.com<br>admin@example.com<br>superadmin@example.com</div>
+  </section>
+</div>

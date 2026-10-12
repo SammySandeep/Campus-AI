@@ -1,0 +1,12 @@
+<%= page_header @assignment.title, "#{@assignment.course.code} · Due #{@assignment.due_at.strftime('%d %b %Y, %I:%M %p')}" do %><%= link_to "Edit", edit_assignment_path(@assignment), class: "button ghost" if current_user.faculty? || current_user.admin? %><% end %>
+<div class="grid grid-2">
+  <section class="card"><div class="split"><%= status_badge(@assignment.published? ? "published" : "draft") %><strong><%= @assignment.maximum_marks %> marks</strong></div><p><%= simple_format @assignment.description %></p></section>
+  <% if current_user.student? %>
+    <section class="card"><div class="section-title"><h2>Your submission</h2><%= status_badge @submission.status if @submission.persisted? %></div>
+      <% if @submission.persisted? %><p>Submitted <%= @submission.submitted_at.strftime("%d %b, %I:%M %p") %></p><p><strong>Marks:</strong> <%= @submission.marks || "Awaiting grading" %></p><p><strong>Feedback:</strong> <%= @submission.feedback.presence || "No feedback yet" %></p><% end %>
+      <% unless @assignment.due_at.past? %><%= form_with model: [@assignment, @submission] do |form| %><div class="field"><%= form.label :work_file, @submission.persisted? ? "Replace file" : "Upload work" %><%= form.file_field :work_file, required: !@submission.persisted? %></div><%= form.submit(@submission.persisted? ? "Update submission" : "Submit work", class: "button") %><% end %><% end %>
+    </section>
+  <% else %>
+    <section class="card"><div class="section-title"><h2>Submissions</h2><span class="badge"><%= @assignment.submissions.count %></span></div><ul class="list"><% @assignment.submissions.each do |submission| %><li class="split"><span><strong><%= submission.student_profile.user.full_name %></strong><br><small class="muted"><%= submission.submitted_at&.strftime("%d %b, %I:%M %p") %></small></span><%= status_badge submission.status %></li><% end %></ul></section>
+  <% end %>
+</div>
